@@ -1,14 +1,28 @@
 def add(a, b):
-    raise NotImplementedError("Implement this function using TDD")
+    return a + b
 
 
 def subtract(a, b):
-    raise NotImplementedError("Implement this function using TDD")
+    return a - b
 
 
 def multiply(a, b):
-    raise NotImplementedError("Implement this function using TDD")
+    return a * b
 
 
 def divide(a, b):
-    raise NotImplementedError("Implement this function using TDD")
+    if b == 0:
+        raise ValueError("Division by 0 not permitted!")
+    return a / b
+
+
+def power(a, b):
+    if b < 0:
+        raise ValueError("Negative exponent!")
+    return pow(a, b)
+
+
+def modulo(a, b):
+   if b == 0:
+       raise ValueError("Divisor mustn't be zero!")
+   return a % b
