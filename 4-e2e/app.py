@@ -2,35 +2,62 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+history = list()
 
 @app.route("/")
 def home():
-    raise NotImplementedError("Implement home endpoint using TDD")
+    return jsonify({'message': 'Welcome to the Flask App!'})
 
 
 @app.route("/health")
 def health():
-    raise NotImplementedError("Implement health endpoint using TDD")
+    return jsonify({"status": "ok"})
 
 
 @app.route("/add", methods=["POST"])
 def add():
-    raise NotImplementedError("Implement add endpoint using TDD")
+    data = request.get_json()
+    a = data["a"]
+    b = data["b"]
+    result = a + b
+    history.append({"a": a, "b": b, "result": result, "operation": "add"})
+    return jsonify({"result": result})
 
 
 @app.route("/subtract", methods=["POST"])
 def subtract():
-    raise NotImplementedError("Implement subtract endpoint using TDD")
+    data = request.get_json()
+    a = data["a"]
+    b = data["b"]
+    result = a - b
+    history.append({"a": a, "b": b, "result": result, "operation": "subtract"})
+    return jsonify({"result": result})
 
 
 @app.route("/multiply", methods=["POST"])
 def multiply():
-    raise NotImplementedError("Implement multiply endpoint using TDD")
+    data = request.get_json()
+    a = data["a"]
+    b = data["b"]
+    result = a * b
+    history.append({"a": a, "b": b, "result": result, "operation": "multiply"})
+    return jsonify({"result": result})
 
 
 @app.route("/divide", methods=["POST"])
 def divide():
-    raise NotImplementedError("Implement divide endpoint using TDD")
+    data = request.get_json()
+    a = data["a"]
+    b = data["b"]
+    if b == 0:
+        return jsonify({"error": "Bad request"}), 400
+    result = a / b
+    history.append({"a": a, "b": b, "result": result, "operation": "divide"})
+    return jsonify({"result": result})
+
+@app.route("/history")
+def show_history():
+    return jsonify(history)
 
 
 if __name__ == "__main__":
