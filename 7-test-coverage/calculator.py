@@ -1,38 +1,50 @@
+import math
+
 def add(a, b):
-    raise NotImplementedError("Implement add using TDD")
+    return a + b
 
 
 def subtract(a, b):
-    raise NotImplementedError("Implement subtract using TDD")
+    return a - b
 
 
 def multiply(a, b):
-    raise NotImplementedError("Implement multiply using TDD")
+    return a * b
 
 
 def divide(a, b):
-    raise NotImplementedError("Implement divide using TDD")
-
-
-def power(base, exponent):
-    raise NotImplementedError("Implement power using TDD")
-
-
-def square_root(n):
-    raise NotImplementedError("Implement square_root using TDD")
+    if b == 0:
+        raise ValueError("Division by 0 not permitted!")
+    return a / b
 
 
 def modulo(a, b):
-    raise NotImplementedError("Implement modulo using TDD")
+   if b == 0:
+       raise ValueError("Divisor mustn't be zero!")
+   return a % b
+
+
+def power(base, exponent):
+    if exponent < 0:
+        raise ValueError("Negative exponent!")
+    return pow(base, exponent)
+
+
+def square_root(n):
+    return math.sqrt(n)
 
 
 def is_even(n):
-    raise NotImplementedError("Implement is_even using TDD")
+    return n % 2 == 0
 
 
 def is_positive(n):
-    raise NotImplementedError("Implement is_positive using TDD")
+    return n > 0
 
 
 def factorial(n):
-    raise NotImplementedError("Implement factorial using TDD")
+    if n < 0:
+        raise ValueError("n must be non-negative number")
+    if n == 0 or n == 1:
+        return 1
+    return n * factorial(n-1)
