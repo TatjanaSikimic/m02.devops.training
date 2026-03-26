@@ -2,16 +2,25 @@ import api_client
 
 
 def get_weather(city):
-    raise NotImplementedError("Implement get_weather using TDD")
+    return api_client.fetch_weather_data(city)
 
 
 def get_forecast(city, days=3):
-    raise NotImplementedError("Implement get_forecast using TDD")
+    return api_client.fetch_forecast(city, days)
 
 
 def is_good_weather(conditions):
-    raise NotImplementedError("Implement is_good_weather using TDD")
-
+    for condition in conditions:
+        if condition not in ["sunny", "partly cloudy"]:
+            return False
+    return True
 
 def get_greeting_based_on_time():
-    raise NotImplementedError("Implement get_greeting_based_on_time using TDD")
+    hour = api_client.get_current_hour()
+
+    if hour < 12:
+        return "Good morning!"
+    elif hour < 18:
+        return "Good afternoon!"
+    else:
+        return "Good evening!"
