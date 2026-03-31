@@ -86,7 +86,6 @@ blocks:
       jobs:
         - name: Running the performance tests
           commands:
-            - cache restore
             - 'set -e  # fail fast if anything breaks'
             - '#export DISABLE_RATE_LIMIT=1'
             - '# Install dependencies'
