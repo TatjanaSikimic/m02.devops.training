@@ -10,8 +10,7 @@ Talisman(app, force_https=False)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"],
-    storage_uri="memory://"
+    default_limits=["100 per second"]
 )
 
 history = list()
@@ -107,7 +106,7 @@ def divide():
     return jsonify({"result": result})
 
 @app.route("/history")
-@limiter.limit("5 per second")
+@limiter.limit("100 per second")
 def show_history():
     return jsonify(history)
 
