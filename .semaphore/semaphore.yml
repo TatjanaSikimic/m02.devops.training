@@ -95,7 +95,7 @@ blocks:
             - '#pip install flask_limiter'
             - cd ..
             - cd 8-performance-testing
-            - '#pip install locust'
+            - pip install locust
             - '# Start Flask app in background'
             - 'python -c "import sys; sys.path.insert(0, ''../4-e2e''); from app import app; app.run()" > flask.log 2>&1 &'
             - '#APP_PID=$!'
