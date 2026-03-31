@@ -47,11 +47,23 @@ blocks:
       jobs:
         - name: Run integration tests
           commands:
+            - cache restore
             - cd 3-integration-testing && python -m pytest test_integration.py -v
             - cd ..
             - cd 6-mocking && python -m pytest test_weather_service.py -v
             - cd ..
             - cd 10-database-testing && python -m pytest test_database.py -v
+  - name: End-to-end tests
+    dependencies:
+      - Integration tests
+    task:
+      jobs:
+        - name: Run E2E tests
+          commands:
+            - cache restore
+            - cd 4-e2e && nohup python app.py &
+            - sleep 3
+            - python -m pytest test_e2e.py -v
 after_pipeline:
   task:
     jobs:
