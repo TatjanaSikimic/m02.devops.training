@@ -93,7 +93,7 @@ blocks:
             - '#cd 4-e2e'
             - '#pip install -r requirements.txt'
             - '#pip install flask_limiter'
-            - cd ..
+            - '#cd ..'
             - cd 8-performance-testing
             - pip install locust
             - '# Start Flask app in background'
