@@ -57,7 +57,7 @@ def health():
 
 
 @app.route("/add", methods=["POST"])
-@limiter.limit("100 per minute")
+@limiter.limit("100 per second")
 def add():
     a, b, error = validate_data()
 
@@ -70,7 +70,7 @@ def add():
 
 
 @app.route("/subtract", methods=["POST"])
-@limiter.limit("100 per minute")
+@limiter.limit("100 per second")
 def subtract():
     a, b, error = validate_data()
     if error:
@@ -81,7 +81,7 @@ def subtract():
     return jsonify({"result": result})
 
 @app.route("/multiply", methods=["POST"])
-@limiter.limit("100 per minute")
+@limiter.limit("100 per second")
 def multiply():
     a, b, error = validate_data()
     if error:
@@ -93,7 +93,7 @@ def multiply():
 
 
 @app.route("/divide", methods=["POST"])
-@limiter.limit("100 per minute")
+@limiter.limit("100 per second)
 def divide():
     a, b, error = validate_data()
     if error:
@@ -107,7 +107,7 @@ def divide():
     return jsonify({"result": result})
 
 @app.route("/history")
-@limiter.limit("5 per minute")
+@limiter.limit("5 per second")
 def show_history():
     return jsonify(history)
 
