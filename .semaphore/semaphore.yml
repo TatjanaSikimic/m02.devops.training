@@ -25,6 +25,7 @@ blocks:
       jobs:
         - name: Setup
           commands:
+            - cache restore
             - echo "Installing dependencies...."
             - pip install pytest requests flask coverage locust
             - cache store
@@ -73,7 +74,9 @@ blocks:
       jobs:
         - name: Testing the coverage of the calculator.py tests
           commands:
+            - cache restore
             - cd 7-test-coverage
+            - pip install -r requirements.txt
             - coverage run -m pytest test_calculator.py -v
             - coverage report -m
 after_pipeline:
