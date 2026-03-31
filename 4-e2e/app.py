@@ -1,11 +1,13 @@
 from flask import Flask, jsonify, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_talisman import Talisman
+import re
 
 app = Flask(__name__)
 
-Talisman(app, force_https=False)
+history = []
+
+# ------------------ RATE LIMITING ------------------
 
 limiter = Limiter(
     get_remote_address,
@@ -13,41 +15,79 @@ limiter = Limiter(
     default_limits=["100 per second"]
 )
 
-history = list()
+#if os.getenv("DISABLE_RATE_LIMIT"):
+#    limiter.enabled = False
 
-def sanitize_input(value):
-    if isinstance(value, (int,float)):
-        return value
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({"error": "Too many requests"}), 429
+
+
+# ------------------ HELPERS ------------------
+
+def parse_json():
+    """Safely parse JSON"""
     try:
-        return float(value)
-    except(ValueError, TypeError):
-        return None
+        data = request.get_json(force=True)
+        if not isinstance(data, dict):
+            return None, ("Invalid JSON format", 400)
+        return data, None
+    except Exception:
+        return None, ("Malformed JSON", 400)
 
-def validate_data():
-    data = request.get_json(silent=True)
-    if data is None:
-        return None, None, ("Invalid or missing JSON", 400)
-    
-    if 'a' not in data or 'b' not in data:
-        return None, None, ("Missing required fields 'a' and 'b'", 400)
 
-    a = sanitize_input(data["a"])
-    b = sanitize_input(data["b"])
+def sanitize_number(value):
+    """Sanitize and validate numeric input"""
+    if isinstance(value, (int, float)):
+        return value
 
-    if a is None or b is None:
-        return None, None, ("Invalid data types. Numbers required", 400)
-    
-    if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
-        return None, None, ("Invalid data types. Numbers required", 400)
-    
-    if abs(a) > 1e15 or abs(b) > 1e15:
-        return None, None, ("Numbers too large", 400)
-        
-    return a, b, None
+    if isinstance(value, str):
+        # Detect suspicious patterns
+        if re.search(r"[;\'\"--]|<script>", value, re.IGNORECASE):
+            raise ValueError("Potential injection detected")
+
+        try:
+            return float(value)
+        except ValueError:
+            raise ValueError("Invalid numeric value")
+
+    raise ValueError("Unsupported type")
+
+
+def validate_input(data):
+    """Validate required fields and sanitize values"""
+    if "a" not in data or "b" not in data:
+        return None, "Missing required fields"
+
+    try:
+        a = sanitize_number(data["a"])
+        b = sanitize_number(data["b"])
+    except ValueError as e:
+        return None, str(e)
+
+    # Reject empty values explicitly
+    if a == "" or b == "":
+        return None, "Empty values not allowed"
+
+    return (a, b), None
+
+
+def safe_response(result, operation, a, b):
+    """Store history safely"""
+    history.append({
+        "operation": operation,
+        "a": a,
+        "b": b,
+        "result": result
+    })
+    return jsonify({"result": result})
+
+
+# ------------------ ROUTES ------------------
 
 @app.route("/")
 def home():
-    return jsonify({'message': 'Welcome to the Flask App!'})
+    return "Welcome to the Secure Flask App!"
 
 
 @app.route("/health")
@@ -58,58 +98,85 @@ def health():
 @app.route("/add", methods=["POST"])
 @limiter.limit("100 per second")
 def add():
-    a, b, error = validate_data()
-
+    data, error = parse_json()
     if error:
         return jsonify({"error": error[0]}), error[1]
 
-    result = a + b
-    history.append({"a": a, "b": b, "result": result, "operation": "add"})
-    return jsonify({"result": result})
+    values, validation_error = validate_input(data)
+    if validation_error:
+        return jsonify({"error": validation_error}), 400
+
+    a, b = values
+    return safe_response(a + b, "add", a, b)
 
 
 @app.route("/subtract", methods=["POST"])
 @limiter.limit("100 per second")
 def subtract():
-    a, b, error = validate_data()
+    data, error = parse_json()
     if error:
         return jsonify({"error": error[0]}), error[1]
-        
-    result = a - b
-    history.append({"a": a, "b": b, "result": result, "operation": "subtract"})
-    return jsonify({"result": result})
+
+    values, validation_error = validate_input(data)
+    if validation_error:
+        return jsonify({"error": validation_error}), 400
+
+    a, b = values
+    return safe_response(a - b, "subtract", a, b)
+
 
 @app.route("/multiply", methods=["POST"])
 @limiter.limit("100 per second")
 def multiply():
-    a, b, error = validate_data()
+    data, error = parse_json()
     if error:
         return jsonify({"error": error[0]}), error[1]
-        
-    result = a * b
-    history.append({"a": a, "b": b, "result": result, "operation": "multiply"})
-    return jsonify({"result": result})
+
+    values, validation_error = validate_input(data)
+    if validation_error:
+        return jsonify({"error": validation_error}), 400
+
+    a, b = values
+    return safe_response(a * b, "multiply", a, b)
 
 
 @app.route("/divide", methods=["POST"])
-@limiter.limit("100 per second)
+@limiter.limit("100 per second")
 def divide():
-    a, b, error = validate_data()
+    data, error = parse_json()
     if error:
         return jsonify({"error": error[0]}), error[1]
-    
+
+    values, validation_error = validate_input(data)
+    if validation_error:
+        return jsonify({"error": validation_error}), 400
+
+    a, b = values
+
     if b == 0:
-        return jsonify({"error": "Division by zero is not permitted"}), 400
+        return jsonify({"error": "Division by zero"}), 400
 
-    result = a / b
-    history.append({"a": a, "b": b, "result": result, "operation": "divide"})
-    return jsonify({"result": result})
+    return safe_response(a / b, "divide", a, b)
 
-@app.route("/history")
+
+@app.route("/history", methods=["GET"])
 @limiter.limit("100 per second")
-def show_history():
+def get_history():
     return jsonify(history)
 
 
+# ------------------ SECURITY HEADERS ------------------
+
+@app.after_request
+def add_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    return response
+
+
+# ------------------ MAIN ------------------
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    #app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False, use_reloader=False)
