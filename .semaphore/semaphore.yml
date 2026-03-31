@@ -38,4 +38,5 @@ blocks:
             - cache restore
             - echo "Running the tests test_factorial.py and test_math_sum.py from exercises 1-2"
             - cd 1-tdd && python -m pytest test_factorial.py -v
+            - cd ..
             - cd 2-unit-testing && python -m pytest test_math_sum.py -v
