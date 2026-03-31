@@ -86,13 +86,14 @@ blocks:
       jobs:
         - name: Running the performance tests
           commands:
-            - 'set -e  # fail fast if anything breaks'
+            - cache restore
+            - '#set -e  # fail fast if anything breaks'
             - '#export DISABLE_RATE_LIMIT=1'
             - '# Install dependencies'
-            - cd 4-e2e
-            - pip install -r requirements.txt
-            - pip install flask_limiter
-            - cd ..
+            - '#cd 4-e2e'
+            - '#pip install -r requirements.txt'
+            - '#pip install flask_limiter'
+            - '#cd ..'
             - cd 8-performance-testing
             - pip install locust
             - '# Start Flask app in background'
