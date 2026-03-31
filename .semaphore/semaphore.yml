@@ -28,14 +28,14 @@ blocks:
             - echo "Installing dependencies...."
             - pip install pytest requests flask coverage locust
             - cache store
-  - name: "\U0001F680 Deploy"
+  - name: Unit tests
     dependencies:
       - Install Dependencies
     task:
       jobs:
-        - name: "\U0001F4E6 Deploy to Production"
+        - name: Run Unit tests
           commands:
-            - echo "Building application..."
-            - echo "Running security checks..."
-            - echo "Deploying to production..."
-            - echo "Deployment completed successfully!"
+            - cache restore
+            - echo "Running the tests test_factorial.py and test_math_sum.py from exercises 1-2"
+            - cd 1-tdd && python -m pytest test_factorial.py -v
+            - cd 2-unit-testing && python -m pytest test_math_sum.py -v
