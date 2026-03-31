@@ -15,7 +15,9 @@ auto_cancel:
 global_job_config:
   prologue:
     commands:
+      - sem-version python 3.12
       - checkout
+      - mkdir -p .pip_cache
 blocks:
   - name: Install Dependencies
     dependencies: []
