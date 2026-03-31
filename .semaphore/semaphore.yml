@@ -87,7 +87,6 @@ blocks:
         - name: Running the performance tests
           commands:
             - 'set -e  # fail fast if anything breaks'
-            - '#export DISABLE_RATE_LIMIT=1'
             - '# Install dependencies'
             - cd 4-e2e
             - pip install -r requirements.txt
