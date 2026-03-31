@@ -87,7 +87,7 @@ blocks:
         - name: Running the performance tests
           commands:
             - cache restore
-            - '#set -e  # fail fast if anything breaks'
+            - 'set -e  # fail fast if anything breaks'
             - '#export DISABLE_RATE_LIMIT=1'
             - '# Install dependencies'
             - '#cd 4-e2e'
