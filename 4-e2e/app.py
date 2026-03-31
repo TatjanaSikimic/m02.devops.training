@@ -4,6 +4,24 @@ app = Flask(__name__)
 
 history = list()
 
+def validate_data():
+    data = request.get_json(silent=True)
+    if data is None:
+        return None, None, ("Invalid or missing JSON", 400)
+    
+    if 'a' not in data or 'b' not in data:
+        return None, None, ("Missing required fields 'a' and 'b'", 400)
+    
+    a, b = data["a"], data["b"]
+    
+    if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+        return None, None, ("Invalid data types. Numbers required", 400)
+    
+    if abs(a) > 1e15 or abs(b) > 1e15:
+        return None, None, ("Numbers too large", 400)
+        
+    return a, b, None
+
 @app.route("/")
 def home():
     return jsonify({'message': 'Welcome to the Flask App!'})
@@ -16,9 +34,11 @@ def health():
 
 @app.route("/add", methods=["POST"])
 def add():
-    data = request.get_json()
-    a = data["a"]
-    b = data["b"]
+    a, b, error = validate_data()
+
+    if error:
+        return jsonify({"error": error[0]}), error[1]
+
     result = a + b
     history.append({"a": a, "b": b, "result": result, "operation": "add"})
     return jsonify({"result": result})
@@ -26,19 +46,20 @@ def add():
 
 @app.route("/subtract", methods=["POST"])
 def subtract():
-    data = request.get_json()
-    a = data["a"]
-    b = data["b"]
+    a, b, error = validate_data()
+    if error:
+        return jsonify({"error": error[0]}), error[1]
+        
     result = a - b
     history.append({"a": a, "b": b, "result": result, "operation": "subtract"})
     return jsonify({"result": result})
 
-
 @app.route("/multiply", methods=["POST"])
 def multiply():
-    data = request.get_json()
-    a = data["a"]
-    b = data["b"]
+    a, b, error = validate_data()
+    if error:
+        return jsonify({"error": error[0]}), error[1]
+        
     result = a * b
     history.append({"a": a, "b": b, "result": result, "operation": "multiply"})
     return jsonify({"result": result})
@@ -46,11 +67,13 @@ def multiply():
 
 @app.route("/divide", methods=["POST"])
 def divide():
-    data = request.get_json()
-    a = data["a"]
-    b = data["b"]
+    a, b, error = validate_data()
+    if error:
+        return jsonify({"error": error[0]}), error[1]
+    
     if b == 0:
-        return jsonify({"error": "Bad request"}), 400
+        return jsonify({"error": "Division by zero is not permitted"}), 400
+
     result = a / b
     history.append({"a": a, "b": b, "result": result, "operation": "divide"})
     return jsonify({"result": result})
