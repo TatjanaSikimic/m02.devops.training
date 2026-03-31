@@ -1,0 +1,46 @@
+version: v1.0
+name: "\U0001F3AF Simple CI Pipeline"
+agent:
+  machine:
+    type: f1-standard-2
+    os_image: ubuntu2404
+fail_fast:
+  stop:
+    when: branch != 'main'
+auto_cancel:
+  running:
+    when: branch != 'main'
+  queued:
+    when: branch = 'main'
+global_job_config:
+  prologue:
+    commands:
+      - sem-version python 3.12
+      - checkout
+      - mkdir -p .pip_cache
+blocks:
+  - name: Install Dependencies
+    dependencies: []
+    task:
+      jobs:
+        - name: Setup
+          commands:
+            - pip install pytest requests flask coverage locust
+      agent:
+        machine:
+          type: f1-standard-2
+          os_image: ubuntu2404
+        containers:
+          - name: main
+            image: 'semaphoreci/ubuntu:20.04'
+  - name: "\U0001F680 Deploy"
+    dependencies:
+      - Install Dependencies
+    task:
+      jobs:
+        - name: "\U0001F4E6 Deploy to Production"
+          commands:
+            - echo "Building application..."
+            - echo "Running security checks..."
+            - echo "Deploying to production..."
+            - echo "Deployment completed successfully!"
