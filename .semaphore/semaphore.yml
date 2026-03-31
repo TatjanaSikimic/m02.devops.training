@@ -26,7 +26,7 @@ blocks:
         - name: Setup
           commands:
             - echo "Installing dependencies...."
-            - pip install pytest requests flask coverage locust flask-limiter
+            - pip install pytest requests flask coverage locust
             - cache store
   - name: "\U0001F680 Deploy"
     dependencies:
