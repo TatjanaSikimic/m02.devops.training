@@ -79,6 +79,17 @@ blocks:
             - pip install coverage
             - coverage run -m pytest test_calculator.py -v
             - coverage report -m
+  - name: Perofrmance Testing
+    dependencies:
+      - End-to-end tests
+    task:
+      jobs:
+        - name: Running the performance tests
+          commands:
+            - cd 8-performance-testing
+            - 'nohup python -c "import sys; sys.path.insert(0, ''../4-e2e''); from app import'
+            - app; app.run()" &
+            - sleep 3
 after_pipeline:
   task:
     jobs:
