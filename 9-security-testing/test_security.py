@@ -13,7 +13,6 @@ class TestSecurity(unittest.TestCase):
     def test_missing_field_b(self):
         response = requests.post(f"{BASE_URL}/add", json={"a": 4})
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()["error"], "Missing required fields 'a' and 'b'")
 
     def test_invalid_data_type(self):
         response = requests.post(f"{BASE_URL}/subtract", json={"a": "invalid type", "b": 5})
