@@ -66,6 +66,16 @@ blocks:
             - nohup python app.py &
             - sleep 3
             - python -m pytest test_e2e.py -v
+  - name: Test coverage
+    dependencies:
+      - Install Dependencies
+    task:
+      jobs:
+        - name: Testing the coverage of the calculator.py tests
+          commands:
+            - cd 7-test-coverage
+            - coverage run -m pytest test_calculator.py -v
+            - coverage report -m
 after_pipeline:
   task:
     jobs:
