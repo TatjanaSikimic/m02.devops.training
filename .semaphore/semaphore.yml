@@ -3,8 +3,8 @@ name: "🐍 Python CI/CD Pipeline"
 
 agent:  # Placeholders; choose real values in UI → https://docs.semaphoreci.com/reference/machine-types/
   machine:
-    type: a2-standard-4
-    os_image: macos-xcode16
+    type: f1-standard-2
+    os_image: ubuntu2404
 
 auto_cancel:  # Skip queued runs on new commit → https://docs.semaphoreci.com/reference/pipeline-yaml/#auto-cancel
   queued:
