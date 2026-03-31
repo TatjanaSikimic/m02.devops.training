@@ -1,8 +1,28 @@
 from flask import Flask, jsonify, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
 
 app = Flask(__name__)
 
+Talisman(app, force_https=False)
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+
 history = list()
+
+def sanitize_input(value):
+    if isinstance(value, (int,float)):
+        return value
+    try:
+        return float(value)
+    except(ValueError, TypeError):
+        return None
 
 def validate_data():
     data = request.get_json(silent=True)
@@ -11,8 +31,12 @@ def validate_data():
     
     if 'a' not in data or 'b' not in data:
         return None, None, ("Missing required fields 'a' and 'b'", 400)
-    
-    a, b = data["a"], data["b"]
+
+    a = sanitize_input(data["a"])
+    b = sanitize_input(data["b"])
+
+    if a is None or b is None:
+        return None, None, ("Invalid data types. Numbers required", 400)
     
     if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
         return None, None, ("Invalid data types. Numbers required", 400)
@@ -33,6 +57,7 @@ def health():
 
 
 @app.route("/add", methods=["POST"])
+@limiter.limit("100 per minute")
 def add():
     a, b, error = validate_data()
 
@@ -45,6 +70,7 @@ def add():
 
 
 @app.route("/subtract", methods=["POST"])
+@limiter.limit("100 per minute")
 def subtract():
     a, b, error = validate_data()
     if error:
@@ -55,6 +81,7 @@ def subtract():
     return jsonify({"result": result})
 
 @app.route("/multiply", methods=["POST"])
+@limiter.limit("100 per minute")
 def multiply():
     a, b, error = validate_data()
     if error:
@@ -66,6 +93,7 @@ def multiply():
 
 
 @app.route("/divide", methods=["POST"])
+@limiter.limit("100 per minute")
 def divide():
     a, b, error = validate_data()
     if error:
@@ -79,6 +107,7 @@ def divide():
     return jsonify({"result": result})
 
 @app.route("/history")
+@limiter.limit("5 per minute")
 def show_history():
     return jsonify(history)
 
