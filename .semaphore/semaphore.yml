@@ -76,7 +76,6 @@ blocks:
           commands:
             - cache restore
             - cd 7-test-coverage
-            - pip install -r requirements.txt
             - coverage run -m pytest test_calculator.py -v
             - coverage report -m
 after_pipeline:
