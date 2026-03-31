@@ -25,11 +25,9 @@ blocks:
       jobs:
         - name: Setup
           commands:
-            - pip install pytest requests flask coverage locust
-      agent:
-        machine:
-          type: e1-standard-2
-          os_image: ''
+            - echo "Installing dependencies...."
+            - pip install pytest requests flask coverage locust flask-limiter
+            - cache store
   - name: "\U0001F680 Deploy"
     dependencies:
       - Install Dependencies
