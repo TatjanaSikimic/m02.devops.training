@@ -95,9 +95,9 @@ blocks:
             - 'set -e  # fail fast if anything breaks'
             - '#export DISABLE_RATE_LIMIT=1'
             - '# Install dependencies'
-            - cd 4-e2e
-            - pip install -r requirements.txt
-            - pip install flask_limiter
+            - '#cd 4-e2e'
+            - '#pip install -r requirements.txt'
+            - '#pip install flask_limiter'
             - cd ..
             - cd 8-performance-testing
             - pip install locust
