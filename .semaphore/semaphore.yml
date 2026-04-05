@@ -87,7 +87,7 @@ blocks:
             - coverage report -m
   - name: Performance Tests
     dependencies:
-      - E2E Tests
+      - Security Tests
     task:
       jobs:
         - name: Run Tests
@@ -104,6 +104,7 @@ blocks:
             - '# Start Flask app in background'
             - 'python -c "import sys; sys.path.insert(0, ''../4-e2e''); from app import app; app.run()" > flask.log 2>&1 &'
             - APP_PID=$!
+            - sleep 2
             - '# wait until app is ready - running state'
             - 'until curl -s http://127.0.0.1:5000/health; do sleep 1; done'
             - '# Run Locust (this will block until finished)'
