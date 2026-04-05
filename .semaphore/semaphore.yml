@@ -72,7 +72,7 @@ blocks:
             - pip install flask_limiter
             - nohup python app.py &
             - '# wait until app is ready - running state'
-            - 'until curl -s http://127.0.0.1:5000/health; do sleep 1; done'
+            - '#until curl -s http://127.0.0.1:5000/health; do sleep 1; done'
             - python -m pytest test_e2e.py -v
   - name: Coverage
     dependencies:
