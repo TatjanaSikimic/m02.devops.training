@@ -44,7 +44,7 @@ blocks:
             - python -m pytest test_math_sum.py -v
   - name: Integration Tests
     dependencies:
-      - Unit Tests
+      - Setup
     task:
       jobs:
         - name: Run Tests
@@ -61,6 +61,7 @@ blocks:
   - name: E2E Tests
     dependencies:
       - Integration Tests
+      - Unit Tests
     task:
       jobs:
         - name: Run Tests
@@ -75,7 +76,7 @@ blocks:
             - python -m pytest test_e2e.py -v
   - name: Coverage
     dependencies:
-      - Setup
+      - E2E Tests
     task:
       jobs:
         - name: Check coverage
@@ -87,7 +88,6 @@ blocks:
   - name: Performance Tests
     dependencies:
       - E2E Tests
-      - Setup
     task:
       jobs:
         - name: Run Tests
@@ -112,8 +112,7 @@ blocks:
             - kill $APP_PID
   - name: Security Tests
     dependencies:
-      - Performance Tests
-      - Setup
+      - E2E Tests
     task:
       jobs:
         - name: Run Tests
@@ -134,7 +133,12 @@ blocks:
             - kill $APP_PID
   - name: Test Report
     dependencies:
-      - Setup
+      - Coverage
+      - E2E Tests
+      - Integration Tests
+      - Performance Tests
+      - Security Tests
+      - Unit Tests
     task:
       jobs:
         - name: Make Report
