@@ -92,7 +92,7 @@ blocks:
       jobs:
         - name: Run Tests
           commands:
-            - cache restore
+            - cache restore python_bundle
             - 'set -e  # fail fast if anything breaks'
             - '#export DISABLE_RATE_LIMIT=1'
             - '# Install dependencies'
@@ -119,6 +119,7 @@ blocks:
       jobs:
         - name: Run Tests
           commands:
+            - cache restore python_bundle
             - '# Install dependencies'
             - cd 4-e2e
             - pip install -r requirements.txt
